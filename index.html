@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Malak — a quiet place for the day</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <div>
+        <div class="mark">Life ledger</div>
+        <h1>A calm record of water, meals, mood, and time.</h1>
+        <p>Track the small things, color your tasks by group, and drop them onto a daily planner as honest time blocks.</p>
+      </div>
+      <div class="date-chip" id="today-label"></div>
+    </header>
+
+    <nav>
+      <button class="is-on" data-go="home">Today</button>
+      <button data-go="water">Water</button>
+      <button data-go="food">Food</button>
+      <button data-go="mood">Mood</button>
+      <button data-go="tasks">Tasks</button>
+      <button data-go="planner">Planner</button>
+      <button data-go="calendar">Calendar</button>
+    </nav>
+
+    <section class="panel is-on" id="home">
+      <div class="hero-grid">
+        <article class="card">
+          <h2>Today at a glance</h2>
+          <p class="lede">A wide, quiet summary. Open any room when you want to add something.</p>
+          <div class="three">
+            <div>
+              <div class="stat" id="home-water">0 <span>/ 8</span></div>
+              <p class="meta">glasses of water</p>
+            </div>
+            <div>
+              <div class="stat" id="home-food">0</div>
+              <p class="meta">meals logged</p>
+            </div>
+            <div>
+              <div class="stat" id="home-mood">—</div>
+              <p class="meta">mood</p>
+            </div>
+          </div>
+          <div class="pills" id="home-pills"></div>
+        </article>
+        <article class="card quiet">
+          <h2>Due soon</h2>
+          <p class="lede">Tasks with a due date in the next few days.</p>
+          <div class="list" id="home-due"></div>
+        </article>
+      </div>
+      <div class="split">
+        <article class="card">
+          <h2>Planned for today</h2>
+          <p class="lede">These already have a “do on” date. Place them on the planner when you know the hour.</p>
+          <div class="list" id="home-plan"></div>
+        </article>
+        <article class="card">
+          <h2>On the calendar</h2>
+          <p class="lede">Events sitting on today.</p>
+          <div class="list" id="home-events"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="water">
+      <article class="card">
+        <h2>Water</h2>
+        <p class="lede">Eight glasses, plenty of air around them. Tap to fill. Tap again to empty.</p>
+        <p class="stat" id="water-count">0 <span>/ 8 glasses</span></p>
+        <div class="glasses" id="glasses"></div>
+      </article>
+    </section>
+
+    <section class="panel" id="food">
+      <div class="split">
+        <article class="card">
+          <h2>Food diary</h2>
+          <p class="lede">A gentle log, not a scoreboard.</p>
+          <form id="food-form">
+            <div class="row">
+              <label>Meal
+                <select name="meal">
+                  <option>Breakfast</option>
+                  <option>Lunch</option>
+                  <option>Dinner</option>
+                  <option>Snack</option>
+                </select>
+              </label>
+              <label>Time
+                <input type="time" name="time" required>
+              </label>
+            </div>
+            <label>What did you eat?
+              <textarea name="text" required placeholder="Oatmeal, blueberries, honey"></textarea>
+            </label>
+            <button class="btn" type="submit">Add to diary</button>
+          </form>
+        </article>
+        <article class="card quiet">
+          <h2>Today’s meals</h2>
+          <div class="list" id="food-list"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="mood">
+      <div class="split">
+        <article class="card">
+          <h2>Mood</h2>
+          <p class="lede">One note for the day is enough. You can replace it anytime.</p>
+          <div class="moods" id="mood-picks">
+            <button class="mood" type="button" data-mood="1"><span>🌧️</span><small>Low</small></button>
+            <button class="mood" type="button" data-mood="2"><span>🍃</span><small>Uneasy</small></button>
+            <button class="mood" type="button" data-mood="3"><span>🌤️</span><small>Steady</small></button>
+            <button class="mood" type="button" data-mood="4"><span>💙</span><small>Light</small></button>
+            <button class="mood" type="button" data-mood="5"><span>✨</span><small>Bright</small></button>
+          </div>
+          <form id="mood-form">
+            <label>A few words
+              <textarea name="note" placeholder="What is coloring the day?"></textarea>
+            </label>
+            <button class="btn" type="submit">Save mood</button>
+          </form>
+        </article>
+        <article class="card quiet">
+          <h2>Recent days</h2>
+          <div class="list" id="mood-list"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="tasks">
+      <div class="hero-grid">
+        <article class="card">
+          <h2>Tasks</h2>
+          <p class="lede">Each task belongs to a group, so color does the sorting for you. Add a due date, the day you want to do it, and how long you think it will take.</p>
+          <form id="task-form">
+            <label>Title
+              <input name="title" required placeholder="Draft history notes">
+            </label>
+            <div class="row">
+              <label>Group
+                <select name="groupId" id="task-group" required></select>
+              </label>
+              <label>Estimated time
+                <input name="minutes" type="number" min="15" step="15" value="45" required>
+              </label>
+            </div>
+            <div class="row">
+              <label>Due date
+                <input name="due" type="date">
+              </label>
+              <label>Day I want to do it
+                <input name="planned" type="date">
+              </label>
+            </div>
+            <label>Notes
+              <textarea name="notes" placeholder="Optional context"></textarea>
+            </label>
+            <button class="btn" type="submit">Save task</button>
+          </form>
+        </article>
+        <article class="card quiet">
+          <h2>Groups</h2>
+          <p class="lede">Name a circle of work and pick its color.</p>
+          <form id="group-form">
+            <div class="color-field">
+              <input type="color" name="color" value="#5c84a4">
+              <input name="name" required placeholder="School, home, health…">
+            </div>
+            <button class="btn-ghost" type="submit">Add group</button>
+          </form>
+          <div class="groups" id="group-list"></div>
+        </article>
+      </div>
+      <article class="card" style="margin-top:24px">
+        <h2>All tasks</h2>
+        <p class="lede">Place a task on the planner with a start time. It becomes a block as long as your estimate.</p>
+        <div class="list" id="task-list"></div>
+      </article>
+    </section>
+
+    <section class="panel" id="planner">
+      <div class="planner">
+        <article class="card">
+          <h2>Ready to place</h2>
+          <p class="lede">Pick a task, then tap an hour. The block uses the time you estimated.</p>
+          <label>Planner day
+            <input type="date" id="planner-date">
+          </label>
+          <div class="list" id="ready-list"></div>
+        </article>
+        <article class="card">
+          <div class="block-head">
+            <h2>Daily planner</h2>
+            <span class="meta" id="planner-label"></span>
+          </div>
+          <div class="hours" id="hours"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="calendar">
+      <article class="card">
+        <div class="cal-head">
+          <button class="btn-ghost" type="button" id="prev-month">Previous</button>
+          <h2 id="cal-title">Calendar</h2>
+          <button class="btn-ghost" type="button" id="next-month">Next</button>
+        </div>
+        <p class="lede">Events you add live here, along with due dates and the days you meant to do a task.</p>
+        <form id="event-form" class="row-3" style="margin-bottom:24px">
+          <label>Event
+            <input name="title" required placeholder="Lecture, visit, concert">
+          </label>
+          <label>Date
+            <input name="date" type="date" required>
+          </label>
+          <label>Time
+            <input name="time" type="time">
+          </label>
+          <button class="btn" type="submit">Add event</button>
+        </form>
+        <div class="cal-grid" id="cal-dows"></div>
+        <div class="cal-grid" id="cal-days"></div>
+      </article>
+    </section>
+  </div>
+
+  <script>
+    const KEY = "malak-life-ledger";
+    const MOODS = { 1: "Low", 2: "Uneasy", 3: "Steady", 4: "Light", 5: "Bright" };
+    const START = 6;
+    const HOURS = 16;
+
+    const today = iso(new Date());
+    let pickedMood = 3;
+    let pickedTask = null;
+    let calCursor = new Date();
+
+    const seed = {
+      groups: [
+        { id: "g1", name: "School", color: "#5c84a4" },
+        { id: "g2", name: "Health", color: "#7a9e8a" },
+        { id: "g3", name: "Home", color: "#c4a574" }
+      ],
+      tasks: [
+        { id: "t1", title: "Read chapter 4", groupId: "g1", due: today, planned: today, minutes: 60, notes: "", done: false, start: "09:00" },
+        { id: "t2", title: "Walk after lunch", groupId: "g2", due: "", planned: today, minutes: 30, notes: "", done: false, start: "" }
+      ],
+      water: {},
+      food: [],
+      moods: [],
+      events: []
+    };
+
+    let db = load();
+
+    function iso(d) {
+      const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+      return z.toISOString().slice(0, 10);
+    }
+
+    function uid() {
+      return crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
+    }
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(KEY);
+        if (!raw) return structuredClone(seed);
+        return { ...structuredClone(seed), ...JSON.parse(raw) };
+      } catch (e) {
+        return structuredClone(seed);
+      }
+    }
+
+    function save() {
+      localStorage.setItem(KEY, JSON.stringify(db));
+    }
+
+    function groupOf(id) {
+      return db.groups.find((g) => g.id === id) || { name: "None", color: "#8aa0b3" };
+    }
+
+    function niceDate(value) {
+      if (!value) return "—";
+      return new Date(value + "T12:00:00").toLocaleDateString(undefined, {
+        weekday: "short", month: "short", day: "numeric"
+      });
+    }
+
+    function minutesLabel(n) {
+      const h = Math.floor(n / 60);
+      const m = n % 60;
+      if (h && m) return h + "h " + m + "m";
+      if (h) return h + "h";
+      return m + " min";
+    }
+
+    document.querySelectorAll("nav button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("nav button").forEach((b) => b.classList.remove("is-on"));
+        document.querySelectorAll(".panel").forEach((p) => p.classList.remove("is-on"));
+        btn.classList.add("is-on");
+        document.getElementById(btn.dataset.go).classList.add("is-on");
+      });
+    });
+
+    document.getElementById("today-label").textContent = new Date().toLocaleDateString(undefined, {
+      weekday: "long", month: "long", day: "numeric"
+    });
+
+    function renderWater() {
+      const n = db.water[today] || 0;
+      document.getElementById("water-count").innerHTML = n + " <span>/ 8 glasses</span>";
+      const wrap = document.getElementById("glasses");
+      wrap.innerHTML = "";
+      for (let i = 1; i <= 8; i += 1) {
+        const b = document.createElement("button");
+        b.className = "glass" + (i <= n ? " is-full" : "");
+        b.type = "button";
+        b.addEventListener("click", () => {
+          db.water[today] = i === n ? i - 1 : i;
+          save();
+          render();
+        });
+        wrap.appendChild(b);
+      }
+    }
+
+    document.getElementById("food-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const f = e.target;
+      db.food.push({
+        id: uid(),
+        date: today,
+        meal: f.meal.value,
+        time: f.time.value,
+        text: f.text.value.trim()
+      });
+      f.reset();
+      save();
+      render();
+    });
+
+    function renderFood() {
+      const items = db.food.filter((x) => x.date === today).sort((a, b) => a.time.localeCompare(b.time));
+      const box = document.getElementById("food-list");
+      box.innerHTML = items.length ? "" : '<p class="empty">No meals yet today.</p>';
+      items.forEach((item) => {
+        const el = document.createElement("div");
+        el.className = "item";
+        el.innerHTML = "<div class='item-top'><h3>" + item.meal + "</h3><span class='meta'>" + item.time + "</span></div><p class='meta'>" + item.text + "</p>";
+        const del = document.createElement("button");
+        del.className = "btn-tiny warn";
+        del.textContent = "Remove";
+        del.addEventListener("click", () => {
+          db.food = db.food.filter((x) => x.id !== item.id);
+          save();
+          render();
+        });
+        el.appendChild(del);
+        box.appendChild(el);
+      });
+    }
+
+    document.querySelectorAll(".mood[data-mood]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        pickedMood = Number(btn.dataset.mood);
+        document.querySelectorAll(".mood[data-mood]").forEach((b) => b.classList.toggle("is-on", b === btn));
+      });
+    });
+    document.querySelector('.mood[data-mood="3"]').classList.add("is-on");
+
+    document.getElementById("mood-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const note = e.target.note.value.trim();
+      db.moods = db.moods.filter((m) => m.date !== today);
+      db.moods.unshift({ id: uid(), date: today, level: pickedMood, note });
+      e.target.reset();
+      save();
+      render();
+    });
+
+    function renderMood() {
+      const box = document.getElementById("mood-list");
+      const rows = db.moods.slice(0, 8);
+      box.innerHTML = rows.length ? "" : '<p class="empty">No moods saved yet.</p>';
+      rows.forEach((m) => {
+        const el = document.createElement("div");
+        el.className = "item";
+        el.innerHTML = "<div class='item-top'><h3>" + MOODS[m.level] + "</h3><span class='meta'>" + niceDate(m.date) + "</span></div><p class='meta'>" + (m.note || "No note") + "</p>";
+        box.appendChild(el);
+      });
+    }
+
+    document.getElementById("group-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      db.groups.push({ id: uid(), name: e.target.name.value.trim(), color: e.target.color.value });
+      e.target.reset();
+      e.target.color.value = "#5c84a4";
+      save();
+      render();
+    });
+
+    document.getElementById("task-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const f = e.target;
+      db.tasks.push({
+        id: uid(),
+        title: f.title.value.trim(),
+        groupId: f.groupId.value,
+        due: f.due.value,
+        planned: f.planned.value,
+        minutes: Number(f.minutes.value) || 30,
+        notes: f.notes.value.trim(),
+        done: false,
+        start: ""
+      });
+      f.reset();
+      f.minutes.value = 45;
+      save();
+      render();
+    });
+
+    function taskCard(task, extra) {
+      const g = groupOf(task.groupId);
+      const el = document.createElement("div");
+      el.className = "item" + (task.done ? " done" : "");
+      el.innerHTML =
+        "<div class='item-top'><h3>" + task.title + "</h3><span class='tag' style='background:" + g.color + "'>" + g.name + "</span></div>" +
+        "<p class='meta'>Due " + niceDate(task.due) + " · Do on " + niceDate(task.planned) + " · " + minutesLabel(task.minutes) +
+        (task.start ? " · starts " + task.start : "") + "</p>";
+      if (task.notes) {
+        const n = document.createElement("p");
+        n.className = "meta";
+        n.textContent = task.notes;
+        el.appendChild(n);
+      }
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      extra(task, actions, el);
+      el.appendChild(actions);
+      return el;
+    }
+
+    function renderGroups() {
+      const box = document.getElementById("group-list");
+      const select = document.getElementById("task-group");
+      box.innerHTML = "";
+      select.innerHTML = "";
+      db.groups.forEach((g) => {
+        const chip = document.createElement("div");
+        chip.className = "group-chip";
+        chip.innerHTML = "<span class='group-swatch' style='background:" + g.color + "'></span>" + g.name;
+        const del = document.createElement("button");
+        del.className = "btn-tiny warn";
+        del.textContent = "Remove";
+        del.addEventListener("click", () => {
+          db.groups = db.groups.filter((x) => x.id !== g.id);
+          save();
+          render();
+        });
+        chip.appendChild(del);
+        box.appendChild(chip);
+        const opt = document.createElement("option");
+        opt.value = g.id;
+        opt.textContent = g.name;
+        select.appendChild(opt);
+      });
+    }
+
+    function renderTasks() {
+      const box = document.getElementById("task-list");
+      box.innerHTML = db.tasks.length ? "" : '<p class="empty">Add a task when you are ready.</p>';
+      db.tasks.forEach((task) => {
+        box.appendChild(taskCard(task, (t, actions) => {
+          const time = document.createElement("input");
+          time.type = "time";
+          time.value = t.start || "09:00";
+          const place = document.createElement("button");
+          place.type = "button";
+          place.className = "btn-tiny";
+          place.textContent = "Place on planner";
+          place.addEventListener("click", () => {
+            const day = t.planned || today;
+            t.planned = day;
+            t.start = time.value;
+            document.getElementById("planner-date").value = day;
+            save();
+            render();
+          });
+          const done = document.createElement("button");
+          done.type = "button";
+          done.className = "btn-tiny";
+          done.textContent = t.done ? "Undo" : "Done";
+          done.addEventListener("click", () => {
+            t.done = !t.done;
+            save();
+            render();
+          });
+          const del = document.createElement("button");
+          del.type = "button";
+          del.className = "btn-tiny warn";
+          del.textContent = "Remove";
+          del.addEventListener("click", () => {
+            db.tasks = db.tasks.filter((x) => x.id !== t.id);
+            save();
+            render();
+          });
+          actions.append(time, place, done, del);
+        }));
+      });
+    }
+
+    const plannerDate = document.getElementById("planner-date");
+    plannerDate.value = today;
+
+    function renderPlanner() {
+      const day = plannerDate.value || today;
+      document.getElementById("planner-label").textContent = niceDate(day);
+      const ready = document.getElementById("ready-list");
+      const placeable = db.tasks.filter((t) => !t.done && (t.planned === day || !t.start));
+      ready.innerHTML = placeable.length ? "" : '<p class="empty">Nothing waiting. Add a task, or set its “do on” date to this day.</p>';
+      placeable.forEach((task) => {
+        const card = taskCard(task, (t, actions, el) => {
+          if (pickedTask === t.id) el.classList.add("ready", "is-picked");
+          else el.classList.add("ready");
+          const pick = document.createElement("button");
+          pick.type = "button";
+          pick.className = "btn-tiny";
+          pick.textContent = pickedTask === t.id ? "Selected" : "Select";
+          pick.addEventListener("click", () => {
+            pickedTask = t.id;
+            renderPlanner();
+          });
+          actions.appendChild(pick);
+        });
+        ready.appendChild(card);
+      });
+
+      const hours = document.getElementById("hours");
+      hours.innerHTML = "";
+      const blocks = document.createElement("div");
+      blocks.className = "blocks";
+      for (let i = 0; i < HOURS; i += 1) {
+        const hour = START + i;
+        const row = document.createElement("button");
+        row.type = "button";
+        row.className = "hour";
+        row.innerHTML = "<span>" + String(hour).padStart(2, "0") + ":00</span>";
+        row.addEventListener("click", () => {
+          if (!pickedTask) return;
+          const task = db.tasks.find((t) => t.id === pickedTask);
+          if (!task) return;
+          task.planned = day;
+          task.start = String(hour).padStart(2, "0") + ":00";
+          pickedTask = null;
+          save();
+          render();
+        });
+        hours.appendChild(row);
+      }
+      db.tasks.filter((t) => t.planned === day && t.start && !t.done).forEach((task) => {
+        const [h, m] = task.start.split(":").map(Number);
+        const top = ((h + m / 60) - START) * 68;
+        const height = Math.max(34, (task.minutes / 60) * 68);
+        const g = groupOf(task.groupId);
+        const b = document.createElement("div");
+        b.className = "block";
+        b.style.top = top + "px";
+        b.style.height = height + "px";
+        b.style.background = g.color;
+        b.innerHTML = "<strong>" + task.title + "</strong><small>" + task.start + " · " + minutesLabel(task.minutes) + "</small>";
+        const lift = document.createElement("button");
+        lift.className = "btn-tiny";
+        lift.style.marginTop = "6px";
+        lift.textContent = "Unplace";
+        lift.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          task.start = "";
+          save();
+          render();
+        });
+        b.appendChild(lift);
+        blocks.appendChild(b);
+      });
+      hours.appendChild(blocks);
+    }
+
+    plannerDate.addEventListener("change", renderPlanner);
+
+    document.getElementById("event-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const f = e.target;
+      db.events.push({ id: uid(), title: f.title.value.trim(), date: f.date.value, time: f.time.value });
+      f.reset();
+      save();
+      render();
+    });
+
+    document.getElementById("prev-month").addEventListener("click", () => {
+      calCursor.setMonth(calCursor.getMonth() - 1);
+      renderCalendar();
+    });
+    document.getElementById("next-month").addEventListener("click", () => {
+      calCursor.setMonth(calCursor.getMonth() + 1);
+      renderCalendar();
+    });
+
+    function marksFor(date) {
+      const lines = [];
+      db.events.filter((e) => e.date === date).forEach((e) => lines.push(e.title));
+      db.tasks.forEach((t) => {
+        if (t.due === date) lines.push("Due: " + t.title);
+        else if (t.planned === date) lines.push(t.title);
+      });
+      return lines.slice(0, 3);
+    }
+
+    function renderCalendar() {
+      const year = calCursor.getFullYear();
+      const month = calCursor.getMonth();
+      document.getElementById("cal-title").textContent = calCursor.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+      const dows = document.getElementById("cal-dows");
+      if (!dows.dataset.ready) {
+        ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach((d) => {
+          const el = document.createElement("div");
+          el.className = "dow";
+          el.textContent = d;
+          dows.appendChild(el);
+        });
+        dows.dataset.ready = "1";
+      }
+      const grid = document.getElementById("cal-days");
+      grid.innerHTML = "";
+      const first = new Date(year, month, 1);
+      const startPad = first.getDay();
+      const days = new Date(year, month + 1, 0).getDate();
+      const total = Math.ceil((startPad + days) / 7) * 7;
+      for (let i = 0; i < total; i += 1) {
+        const dayNum = i - startPad + 1;
+        const cell = document.createElement("div");
+        cell.className = "day";
+        const dateObj = new Date(year, month, dayNum);
+        const inMonth = dayNum > 0 && dayNum <= days;
+        const stamp = iso(inMonth ? dateObj : new Date(year, month, dayNum));
+        if (!inMonth) cell.classList.add("is-other");
+        if (stamp === today) cell.classList.add("is-today");
+        cell.innerHTML = "<strong>" + dateObj.getDate() + "</strong>";
+        marksFor(stamp).forEach((line) => {
+          const p = document.createElement("div");
+          p.className = "dot-line";
+          p.textContent = line;
+          cell.appendChild(p);
+        });
+        grid.appendChild(cell);
+      }
+    }
+
+    function renderHome() {
+      const water = db.water[today] || 0;
+      const food = db.food.filter((x) => x.date === today).length;
+      const mood = db.moods.find((m) => m.date === today);
+      document.getElementById("home-water").innerHTML = water + " <span>/ 8</span>";
+      document.getElementById("home-food").textContent = food;
+      document.getElementById("home-mood").textContent = mood ? MOODS[mood.level] : "—";
+      const pills = document.getElementById("home-pills");
+      pills.innerHTML = "";
+      [
+        db.tasks.filter((t) => !t.done).length + " open tasks",
+        db.events.filter((e) => e.date >= today).length + " upcoming events",
+        db.groups.length + " groups"
+      ].forEach((text) => {
+        const p = document.createElement("span");
+        p.className = "pill";
+        p.textContent = text;
+        pills.appendChild(p);
+      });
+
+      const dueBox = document.getElementById("home-due");
+      const due = db.tasks.filter((t) => t.due && t.due >= today && !t.done).sort((a, b) => a.due.localeCompare(b.due)).slice(0, 4);
+      dueBox.innerHTML = due.length ? "" : '<p class="empty">Nothing due.</p>';
+      due.forEach((t) => dueBox.appendChild(taskCard(t, () => {})));
+
+      const planBox = document.getElementById("home-plan");
+      const plan = db.tasks.filter((t) => t.planned === today && !t.done);
+      planBox.innerHTML = plan.length ? "" : '<p class="empty">Nothing planned for today yet.</p>';
+      plan.forEach((t) => planBox.appendChild(taskCard(t, (task, actions) => {
+        const go = document.createElement("button");
+        go.className = "btn-tiny";
+        go.textContent = "Open planner";
+        go.addEventListener("click", () => document.querySelector('[data-go="planner"]').click());
+        actions.appendChild(go);
+      })));
+
+      const evBox = document.getElementById("home-events");
+      const evs = db.events.filter((e) => e.date === today);
+      evBox.innerHTML = evs.length ? "" : '<p class="empty">No events on today.</p>';
+      evs.forEach((e) => {
+        const el = document.createElement("div");
+        el.className = "item";
+        el.innerHTML = "<h3>" + e.title + "</h3><p class='meta'>" + (e.time || "All day") + "</p>";
+        evBox.appendChild(el);
+      });
+    }
+
+    function render() {
+      renderWater();
+      renderFood();
+      renderMood();
+      renderGroups();
+      renderTasks();
+      renderPlanner();
+      renderCalendar();
+      renderHome();
+    }
+
+    render();
+  </script>
+</body>
+</html>
